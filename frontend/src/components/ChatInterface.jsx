@@ -36,7 +36,6 @@ const ChatInterface = ({ documents, setSnackbar, handleUnauthorized }) => {
       const token = localStorage.getItem('access_token');
       if (!token) throw new Error('No authentication token found. Please login first.');
 
-      console.log('Sending query:', { question: input, doc_id: selectedDocId });
       const response = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
         headers: {

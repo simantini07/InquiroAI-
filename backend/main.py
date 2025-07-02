@@ -500,12 +500,12 @@ async def delete_document(document_id: str, user_id: str = Depends(get_current_u
     
 
 @app.post("/flashcards/{id}")
-async def generate_flashcards(id: str, request: FlashcardRequest = Depends(), user_id: str = Depends(get_current_user)):
+async def generate_flashcards(id: str, request: FlashcardRequest, user_id: str = Depends(get_current_user)):
     if not pool:
         raise HTTPException(status_code=500, detail="Database connection not initialized")
     
     try:
-        # Validate num_flashcards
+        print(f"Received request: {request}")  # Debug log
         num_flashcards = min(max(request.num_flashcards, 1), 20)  # Cap between 1 and 20
         async with pool.acquire() as conn:
             document = await conn.fetchrow(
@@ -518,12 +518,11 @@ async def generate_flashcards(id: str, request: FlashcardRequest = Depends(), us
             if not document['content']:
                 raise HTTPException(status_code=400, detail="No content available for this document")
 
-            # Chunk content for processing
             chunks = nltk.sent_tokenize(document['content'])
             if not chunks:
                 raise HTTPException(status_code=400, detail="No sentences available to generate flashcards")
 
-            content_to_process = "\n".join(chunks)[:16000]  # Gemini context limit
+            content_to_process = "\n".join(chunks)[:16000]
             prompt = (
                 f"You are an expert in creating educational flashcards. Given the following document content, "
                 f"generate exactly {num_flashcards} flashcard question-answer pairs. Each flashcard should have a 'question' and 'answer' field. "
@@ -535,21 +534,16 @@ async def generate_flashcards(id: str, request: FlashcardRequest = Depends(), us
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
 
-            try:
-                response_text = response.text.strip()
-                # Clean the response text to extract JSON
-                if response_text.startswith("```json"):
-                    response_text = response_text[7:]
-                if response_text.endswith("```"):
-                    response_text = response_text[:-3]
-                
-                flashcards = json.loads(response_text.strip())
-                if not isinstance(flashcards, list):
-                    raise ValueError("Expected a list of flashcards")
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Failed to parse flashcard response: {str(e)}")
+            response_text = response.text.strip()
+            if response_text.startswith("```json"):
+                response_text = response_text[7:]
+            if response_text.endswith("```"):
+                response_text = response_text[:-3]
+            
+            flashcards = json.loads(response_text.strip())
+            if not isinstance(flashcards, list):
+                raise ValueError("Expected a list of flashcards")
 
-            # Store flashcards in database
             flashcard_ids = []
             for card in flashcards:
                 flashcard_id = uuid.uuid4()
@@ -560,7 +554,6 @@ async def generate_flashcards(id: str, request: FlashcardRequest = Depends(), us
                 )
                 flashcard_ids.append(str(flashcard_id))
 
-            # Prepare response
             message = f"Generated {len(flashcards)} flashcards for {document['title']}"
             if len(flashcards) < num_flashcards:
                 message += f". Requested {num_flashcards}, but only {len(flashcards)} could be generated due to limited content."
@@ -579,6 +572,7 @@ async def generate_flashcards(id: str, request: FlashcardRequest = Depends(), us
                 "message": message
             }
     except Exception as e:
+        print(f"Error generating flashcards: {str(e)}")  # Debug log
         raise HTTPException(status_code=500, detail=f"Failed to generate flashcards: {str(e)}")
 
 @app.get("/flashcards/{id}", response_model=List[Flashcard])

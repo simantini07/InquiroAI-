@@ -43,7 +43,7 @@ This project showcases a blend of cutting-edge technologies and frameworks:
 ### **🗄️ Database**:
 - **PostgreSQL with pgvector**: Dockerized PostgreSQL instance with vector support for similarity search using embeddings.
 
-### **🎨 Frontend** (Assumed based on provided context):
+### **🎨 Frontend** :
 - **React**: Modern JavaScript library for building dynamic user interfaces.
 - **Material-UI**: Component library for responsive and stylized UI elements.
 - **lucide-react**: Icon library for enhanced visual design.

@@ -106,7 +106,7 @@ const LoginPage = () => {
                                 mb: 1,
                             }}
                         >
-                            Neural Login
+                            InquiroAI Login
                         </Typography>
                         <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
                             Access your AI learning hub

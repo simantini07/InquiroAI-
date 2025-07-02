@@ -8,7 +8,6 @@ const Sidebar = ({ selectedTab, onTabChange, onLogout }) => {
     { id: 'chat', icon: Upload, label: 'AI Assistant', badge: 3 },
     { id: 'flashcards', icon: CreditCard, label: 'Flashcards', badge: null },
     { id: 'documents', icon: FileText, label: 'Documents', badge: 5 },
-    { id: 'analytics', icon: Activity, label: 'Analytics', badge: null },
   ];
 
   return (

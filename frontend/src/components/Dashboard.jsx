@@ -6,7 +6,6 @@ import UploadFile from './UploadFile';
 import ChatInterface from './ChatInterface';
 import FlashcardViewer from './FlashcardViewer';
 import DocumentList from './DocumentList';
-import AnalyticsPanel from './AnalyticsPanel';
 
 const Dashboard = ({ onLogout, handleUnauthorized }) => {
   const [selectedTab, setSelectedTab] = useState('upload');
@@ -88,8 +87,7 @@ const Dashboard = ({ onLogout, handleUnauthorized }) => {
         );
       case 'documents':
         return <DocumentList documents={documents} onDocumentSelect={(doc) => console.log('Selected:', doc)} />;
-      case 'analytics':
-        return <AnalyticsPanel documents={documents} />;
+      
       default:
         return (
           <UploadFile

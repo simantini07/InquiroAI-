@@ -115,7 +115,7 @@ const RegisterPage = () => {
                                 mb: 1,
                             }}
                         >
-                            Neural Register
+                            InquiroAI Register
                         </Typography>
                         <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
                             Join the AI learning revolution
